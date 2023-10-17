@@ -34,6 +34,10 @@ local plugins = {
     },
     { "lukas-reineke/lsp-format.nvim" },
     { "onsails/lspkind.nvim" },
+    {
+        "ray-x/lsp_signature.nvim",
+        event = "VeryLazy",
+    },
     -- Status line
     {
         'nvim-lualine/lualine.nvim',
@@ -41,6 +45,10 @@ local plugins = {
             'nvim-tree/nvim-web-devicons',
             opt = true
         }
+    },
+    -- Git
+    {
+        "lewis6991/gitsigns.nvim",
     },
 }
 
