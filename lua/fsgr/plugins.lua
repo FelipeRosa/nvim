@@ -37,9 +37,16 @@ local plugins = {
     { "lukas-reineke/lsp-format.nvim" },
     { "onsails/lspkind.nvim" },
     {
-        "ray-x/lsp_signature.nvim",
-        event = "VeryLazy",
+        'numToStr/Comment.nvim',
+        opts = {
+            -- add any options here
+        },
+        lazy = false,
     },
+    -- {
+    --    "ray-x/lsp_signature.nvim",
+    --    event = "VeryLazy",
+    --},
     -- Status line
     {
         'nvim-lualine/lualine.nvim',
@@ -49,9 +56,8 @@ local plugins = {
         }
     },
     -- Git
-    {
-        "lewis6991/gitsigns.nvim",
-    },
+    { "lewis6991/gitsigns.nvim" },
+    { "sindrets/diffview.nvim" },
     -- Python
     {
         "linux-cultist/venv-selector.nvim",
