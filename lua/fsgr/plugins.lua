@@ -33,6 +33,15 @@ local plugins = {
         },
     },
     { "lukas-reineke/lsp-format.nvim" },
+    { "onsails/lspkind.nvim" },
+    -- Status line
+    {
+        'nvim-lualine/lualine.nvim',
+        requires = {
+            'nvim-tree/nvim-web-devicons',
+            opt = true
+        }
+    },
 }
 
 return plugins
