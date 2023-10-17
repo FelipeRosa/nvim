@@ -18,4 +18,4 @@ vim.opt.rtp:prepend(lazypath)
 local plugins = require("fsgr.plugins")
 require("lazy").setup(plugins)
 
-vim.cmd [[colorscheme dracula]]
+vim.cmd [[colorscheme catppuccin-macchiato]]

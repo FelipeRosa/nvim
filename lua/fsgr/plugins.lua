@@ -15,10 +15,12 @@ local plugins = {
     -- Syntax
     { "Mofiqul/dracula.nvim" },
     {
+        "catppuccin/nvim",
+        name = "catppuccin",
+        priority = 1000
+    },
+    {
         "nvim-treesitter/nvim-treesitter",
-        config = function()
-            vim.cmd("TSUpdate")
-        end
     },
     -- LSP
     { "williamboman/mason.nvim" },
@@ -49,6 +51,12 @@ local plugins = {
     -- Git
     {
         "lewis6991/gitsigns.nvim",
+    },
+    -- Python
+    {
+        "linux-cultist/venv-selector.nvim",
+        dependencies = { "neovim/nvim-lspconfig", "nvim-telescope/telescope.nvim", "mfussenegger/nvim-dap-python" },
+        event = "VeryLazy",
     },
 }
 
