@@ -57,6 +57,8 @@ local plugins = {
 		dependencies = { "neovim/nvim-lspconfig", "nvim-telescope/telescope.nvim", "mfussenegger/nvim-dap-python" },
 		event = "VeryLazy",
 	},
+	-- Icons
+	{ "nvim-tree/nvim-web-devicons" },
 }
 
 return plugins
