@@ -1,4 +1,6 @@
 local plugins = {
+	-- Explorer
+	{ "nvim-tree/nvim-tree.lua" },
 	-- Telescope
 	{
 		"nvim-telescope/telescope.nvim",
