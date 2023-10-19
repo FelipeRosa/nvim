@@ -96,8 +96,7 @@ lspconfig.rust_analyzer.setup({
 	},
 })
 
-local formatter = require("formatter")
-formatter.setup({
+require("formatter").setup({
 	logging = true,
 	log_level = vim.log.levels.WARN,
 	filetype = {
@@ -134,7 +133,6 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 			vim.cmd(":FormatWrite")
 		end
 	end,
-	once = true,
 })
 
 local cmp = require("cmp")
