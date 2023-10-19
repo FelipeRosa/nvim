@@ -18,3 +18,9 @@ require("nvim-treesitter.configs").setup({
 })
 
 vim.cmd("TSUpdate")
+
+require("treesitter-context").setup({
+	enable = true,
+	line_numbers = true,
+	max_lines = 1,
+})

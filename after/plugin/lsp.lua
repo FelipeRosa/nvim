@@ -1,10 +1,4 @@
-local lsp = require("lsp-zero")
-
-lsp.preset("recommended")
-
-lsp.on_attach(function(_, bufnr)
-	lsp.default_keymaps({ buffer = bufnr })
-end)
+require("Comment").setup()
 
 require("mason").setup()
 require("mason-lspconfig").setup({
@@ -14,16 +8,90 @@ require("mason-lspconfig").setup({
 		"pyright",
 		"rust_analyzer",
 	},
-	handlers = {
-		lsp.default_setup,
-		lua_ls = function()
-			local lua_opts = lsp.nvim_lua_ls()
-			require("lspconfig").lua_ls.setup(lua_opts)
-		end,
+})
+
+local telescope_builtin = require("telescope.builtin")
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+	callback = function(ev)
+		local bufopts = { noremap = true, buffer = ev.buf }
+		vim.keymap.set("n", "gd", telescope_builtin.lsp_definitions, bufopts)
+		vim.keymap.set("n", "gt", telescope_builtin.lsp_type_definitions, bufopts)
+		vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, bufopts)
+		vim.keymap.set("n", "gr", telescope_builtin.lsp_references, bufopts)
+		vim.keymap.set("n", "gt", telescope_builtin.lsp_type_definitions, bufopts)
+		vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
+		vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
+
+		vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, bufopts)
+		vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, bufopts)
+		vim.keymap.set("n", "<leader>ls", telescope_builtin.lsp_document_symbols, bufopts)
+		vim.keymap.set("n", "<leader>lS", telescope_builtin.lsp_dynamic_workspace_symbols, bufopts)
+		vim.keymap.set("n", "<leader>ld", telescope_builtin.diagnostics, bufopts)
+
+		vim.keymap.set("n", "gl", vim.diagnostic.open_float, bufopts)
+		vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, bufopts)
+		vim.keymap.set("n", "]d", vim.diagnostic.goto_next, bufopts)
+	end,
+})
+
+local lspconfig = require("lspconfig")
+
+-- Lua LS
+lspconfig.lua_ls.setup({
+	settings = {
+		Lua = {
+			runtime = {
+				version = "LuaJIT",
+			},
+			diagnostics = {
+				globals = { "vim" },
+			},
+			workspace = {
+				library = vim.api.nvim_get_runtime_file("", true),
+				checkThirdParty = false,
+			},
+			telemetry = {
+				enable = false,
+			},
+		},
 	},
 })
 
-require("formatter").setup({
+-- Python LS
+lspconfig.pyright.setup({})
+lspconfig.ruff_lsp.setup({})
+
+-- Go LS
+lspconfig.gopls.setup({})
+
+-- Rust LS
+lspconfig.rust_analyzer.setup({
+	settings = {
+		["rust-analyzer"] = {
+			imports = {
+				granularity = {
+					group = "module",
+				},
+				prefix = "self",
+			},
+			check = {
+				command = "clippy",
+			},
+			cargo = {
+				buildScripts = {
+					enable = true,
+				},
+			},
+			procMacro = {
+				enable = true,
+			},
+		},
+	},
+})
+
+local formatter = require("formatter")
+formatter.setup({
 	logging = true,
 	log_level = vim.log.levels.WARN,
 	filetype = {
@@ -40,29 +108,12 @@ require("formatter").setup({
 	},
 })
 
-local lint = require("lint")
-lint.linters_by_ft = {
-	lua = { "luacheck" },
-	python = { "ruff" },
-}
-
-vim.api.nvim_create_augroup("Lint", { clear = true })
-vim.api.nvim_create_autocmd("BufEnter", {
-	pattern = "",
-	group = "Lint",
-	callback = function()
-		lint.try_lint()
-	end,
-})
-
-vim.api.nvim_create_augroup("FormatAndLint", { clear = true })
 vim.api.nvim_create_autocmd("BufWritePost", {
 	pattern = "",
-	group = "FormatAndLint",
 	callback = function()
 		vim.cmd(":FormatWrite")
-		lint.try_lint()
 	end,
+	once = true,
 })
 
 local cmp = require("cmp")
@@ -94,11 +145,15 @@ cmp.setup({
 	},
 	formatting = {
 		format = lspkind.cmp_format({
-			mode = "symbol", -- show only symbol annotations
-			maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
-			ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+			-- show only symbol annotations
+			mode = "symbol",
+			-- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+			maxwidth = 50,
+			-- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+			ellipsis_char = "...",
 			-- The function below will be called before any actual modifications from lspkind
-			-- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
+			-- so that you can provide more controls on popup customization.
+			-- See [#30](https://github.com/onsails/lspkind-nvim/pull/30)
 			before = function(_, vim_item)
 				return vim_item
 			end,
@@ -116,7 +171,3 @@ cmp.setup({
 		},
 	},
 })
-
-require("Comment").setup()
-
-lsp.setup()

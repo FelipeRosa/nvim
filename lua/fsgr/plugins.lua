@@ -20,28 +20,19 @@ local plugins = {
 		name = "catppuccin",
 		priority = 1000,
 	},
-	{
-		"nvim-treesitter/nvim-treesitter",
-	},
+	{ "nvim-treesitter/nvim-treesitter" },
+	{ "nvim-treesitter/nvim-treesitter-context" },
 	-- LSP
 	{ "williamboman/mason.nvim" },
 	{ "williamboman/mason-lspconfig.nvim" },
-	{
-		"VonHeikemen/lsp-zero.nvim",
-		dependencies = {
-			{ "neovim/nvim-lspconfig" },
-			{ "hrsh7th/cmp-nvim-lsp" },
-			{ "hrsh7th/nvim-cmp" },
-			{ "L3MON4D3/LuaSnip" },
-		},
-	},
+	{ "neovim/nvim-lspconfig" },
+	{ "hrsh7th/cmp-nvim-lsp" },
+	{ "hrsh7th/nvim-cmp" },
+	{ "L3MON4D3/LuaSnip" },
 	{ "mhartington/formatter.nvim" },
-	{ "mfussenegger/nvim-lint" },
+	-- { "mfussenegger/nvim-lint" },
 	{ "onsails/lspkind.nvim" },
-	{
-		"numToStr/Comment.nvim",
-		lazy = false,
-	},
+	{ "numToStr/Comment.nvim", lazy = false },
 	-- Status line
 	{
 		"nvim-lualine/lualine.nvim",
@@ -61,6 +52,8 @@ local plugins = {
 	},
 	-- Icons
 	{ "nvim-tree/nvim-web-devicons" },
+    -- UI
+    { "stevearc/dressing.nvim" },
 }
 
 return plugins
