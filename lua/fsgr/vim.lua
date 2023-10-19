@@ -6,6 +6,7 @@ vim.opt.wrap = false
 
 vim.opt.signcolumn = "yes"
 vim.opt.number = true
+vim.opt.relativenumber = true
 
 vim.opt.swapfile = false
 vim.opt.backup = false
