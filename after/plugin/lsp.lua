@@ -63,7 +63,13 @@ lspconfig.pyright.setup({})
 lspconfig.ruff_lsp.setup({})
 
 -- Go LS
-lspconfig.gopls.setup({})
+lspconfig.gopls.setup({
+	settings = {
+		gopls = {
+			gofumpt = true,
+		},
+	},
+})
 
 -- Rust LS
 lspconfig.rust_analyzer.setup({
@@ -108,10 +114,25 @@ formatter.setup({
 	},
 })
 
+local lsp_formatted = { "go" }
+
 vim.api.nvim_create_autocmd("BufWritePost", {
-	pattern = "",
-	callback = function()
-		vim.cmd(":FormatWrite")
+	pattern = "*",
+	group = vim.api.nvim_create_augroup("FormatOnSave", { clear = true }),
+	callback = function(opts)
+		local lsp_format = false
+		for _, ft in ipairs(lsp_formatted) do
+			if vim.bo[opts.buf].filetype == ft then
+				lsp_format = true
+				break
+			end
+		end
+
+		if lsp_format then
+			vim.lsp.buf.format()
+		else
+			vim.cmd(":FormatWrite")
+		end
 	end,
 	once = true,
 })
