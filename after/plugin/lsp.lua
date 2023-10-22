@@ -36,9 +36,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 local lspconfig = require("lspconfig")
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 -- Lua LS
 lspconfig.lua_ls.setup({
+	capabilities = capabilities,
 	settings = {
 		Lua = {
 			runtime = {
@@ -59,11 +61,16 @@ lspconfig.lua_ls.setup({
 })
 
 -- Python LS
-lspconfig.pyright.setup({})
-lspconfig.ruff_lsp.setup({})
+lspconfig.pyright.setup({
+	capabilities = capabilities,
+})
+lspconfig.ruff_lsp.setup({
+	capabilities = capabilities,
+})
 
 -- Go LS
 lspconfig.gopls.setup({
+	capabilities = capabilities,
 	settings = {
 		gopls = {
 			gofumpt = true,
@@ -80,6 +87,7 @@ lspconfig.rust_analyzer.setup({
 		vim.keymap.set("n", "<leader>rc", rust.open_cargo_toml, bufopts)
 		vim.keymap.set("n", "<leader>rr", rust.reload_workspace, bufopts)
 	end,
+	capabilities = capabilities,
 	settings = {
 		["rust-analyzer"] = {
 			imports = {
@@ -139,12 +147,24 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 		else
 			vim.cmd(":FormatWrite")
 		end
+
+		-- Fix diagnostics going alway after formatting.
+		vim.diagnostic.enable()
 	end,
 })
 
 local cmp = require("cmp")
 local lspkind = require("lspkind")
 cmp.setup({
+	enabled = function()
+		-- Disable when in comments
+		local context = require("cmp.config.context")
+		if vim.api.nvim_get_mode().mode == "c" then
+			return true
+		else
+			return not context.in_treesitter_capture("comment") and not context.in_syntax_group("Comment")
+		end
+	end,
 	sources = {
 		{
 			name = "nvim_lsp",
@@ -159,10 +179,44 @@ cmp.setup({
 		documentation = cmp.config.window.bordered(),
 	},
 	mapping = {
-		["<Down>"] = cmp.mapping.select_next_item({ behaviour = "select" }),
-		["<Up>"] = cmp.mapping.select_prev_item({ behaviour = "select" }),
-		["<CR>"] = cmp.mapping.confirm({ select = false }),
-		["<Esc>"] = cmp.mapping.abort(),
+		["<C-n>"] = cmp.mapping({
+			i = function()
+				if cmp.visible() then
+					cmp.select_next_item({ behaviour = "insert" })
+				else
+					cmp.complete()
+				end
+			end,
+		}),
+		["<C-p>"] = cmp.mapping({
+			i = function()
+				if cmp.visible() then
+					cmp.select_prev_item({ behaviour = "insert" })
+				else
+					cmp.complete()
+				end
+			end,
+		}),
+		["<CR>"] = cmp.mapping({
+			i = function(fallback)
+				if cmp.visible() and cmp.get_active_entry() then
+					cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+				else
+					fallback()
+				end
+			end,
+			s = cmp.mapping.confirm({ select = true }),
+			c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
+		}),
+		["<C-e>"] = cmp.mapping({
+			i = function(fallback)
+				if cmp.visible() then
+					cmp.mapping.abort()
+				else
+					fallback()
+				end
+			end,
+		}),
 	},
 	snippet = {
 		expand = function(args)

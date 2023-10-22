@@ -1,7 +1,9 @@
 require("nvim-treesitter.configs").setup({
 	ensure_installed = {
 		"c",
+		"fish",
 		"go",
+		"gomod",
 		"lua",
 		"vim",
 		"vimdoc",
@@ -9,6 +11,8 @@ require("nvim-treesitter.configs").setup({
 		"query",
 		"rust",
 	},
+	ignore_install = {},
+	modules = {},
 	sync_install = false,
 	auto_install = true,
 	highlight = {
