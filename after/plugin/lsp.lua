@@ -15,6 +15,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 	callback = function(ev)
 		local bufopts = { noremap = true, buffer = ev.buf }
+
 		vim.keymap.set("n", "gd", telescope_builtin.lsp_definitions, bufopts)
 		vim.keymap.set("n", "gt", telescope_builtin.lsp_type_definitions, bufopts)
 		vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, bufopts)
@@ -27,7 +28,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, bufopts)
 		vim.keymap.set("n", "<leader>ls", telescope_builtin.lsp_document_symbols, bufopts)
 		vim.keymap.set("n", "<leader>lS", telescope_builtin.lsp_dynamic_workspace_symbols, bufopts)
-		vim.keymap.set("n", "<leader>ld", telescope_builtin.diagnostics, bufopts)
 
 		vim.keymap.set("n", "gl", vim.diagnostic.open_float, bufopts)
 		vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, bufopts)
@@ -73,6 +73,13 @@ lspconfig.gopls.setup({
 
 -- Rust LS
 lspconfig.rust_analyzer.setup({
+	on_attach = function(_, bufnr)
+		local bufopts = { noremap = true, buffer = bufnr }
+
+		local rust = require("fsgr.rust")
+		vim.keymap.set("n", "<leader>rc", rust.open_cargo_toml, bufopts)
+		vim.keymap.set("n", "<leader>rr", rust.reload_workspace, bufopts)
+	end,
 	settings = {
 		["rust-analyzer"] = {
 			imports = {

@@ -31,6 +31,10 @@ local plugins = {
 	{ "L3MON4D3/LuaSnip" },
 	{ "mhartington/formatter.nvim" },
 	-- { "mfussenegger/nvim-lint" },
+	{
+		"folke/trouble.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+	},
 	{ "onsails/lspkind.nvim" },
 	{ "numToStr/Comment.nvim", lazy = false },
 	-- Status line
@@ -52,8 +56,8 @@ local plugins = {
 	},
 	-- Icons
 	{ "nvim-tree/nvim-web-devicons" },
-    -- UI
-    { "stevearc/dressing.nvim" },
+	-- UI
+	{ "stevearc/dressing.nvim" },
 }
 
 return plugins
