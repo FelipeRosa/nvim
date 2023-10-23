@@ -4,9 +4,9 @@ require("mason").setup()
 require("mason-lspconfig").setup({
 	ensure_installed = {
 		"gopls",
-		"lua_ls",
 		"pyright",
 		"rust_analyzer",
+		"templ",
 	},
 })
 
@@ -38,28 +38,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
--- Lua LS
-lspconfig.lua_ls.setup({
-	capabilities = capabilities,
-	settings = {
-		Lua = {
-			runtime = {
-				version = "LuaJIT",
-			},
-			diagnostics = {
-				globals = { "vim" },
-			},
-			workspace = {
-				library = vim.api.nvim_get_runtime_file("", true),
-				checkThirdParty = false,
-			},
-			telemetry = {
-				enable = false,
-			},
-		},
-	},
-})
-
 -- Python LS
 lspconfig.pyright.setup({
 	capabilities = capabilities,
@@ -76,6 +54,10 @@ lspconfig.gopls.setup({
 			gofumpt = true,
 		},
 	},
+})
+
+lspconfig.templ.setup({
+	capabilities = capabilities,
 })
 
 -- Rust LS
@@ -111,33 +93,33 @@ lspconfig.rust_analyzer.setup({
 	},
 })
 
+local formatters_by_ft = {
+	lua = require("formatter.filetypes.lua").stylua,
+	python = {
+		require("formatter.filetypes.python").black,
+	},
+	rust = {
+		require("formatter.filetypes.rust").rustfmt,
+	},
+	["*"] = {
+		require("formatter.filetypes.any").remove_trailing_whitespace,
+	},
+}
+
 require("formatter").setup({
 	logging = true,
 	log_level = vim.log.levels.WARN,
-	filetype = {
-		lua = require("formatter.filetypes.lua").stylua,
-		python = {
-			require("formatter.filetypes.python").black,
-		},
-		rust = {
-			require("formatter.filetypes.rust").rustfmt,
-		},
-		["*"] = {
-			require("formatter.filetypes.any").remove_trailing_whitespace,
-		},
-	},
+	filetype = formatters_by_ft,
 })
-
-local lsp_formatted = { "go" }
 
 vim.api.nvim_create_autocmd("BufWritePost", {
 	pattern = "*",
 	group = vim.api.nvim_create_augroup("FormatOnSave", { clear = true }),
 	callback = function(opts)
-		local lsp_format = false
-		for _, ft in ipairs(lsp_formatted) do
+		local lsp_format = true
+		for ft, _ in pairs(formatters_by_ft) do
 			if vim.bo[opts.buf].filetype == ft then
-				lsp_format = true
+				lsp_format = false
 				break
 			end
 		end
@@ -147,18 +129,12 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 		else
 			vim.cmd(":FormatWrite")
 		end
-
-		-- Fix diagnostics going alway after formatting.
-		vim.diagnostic.enable()
 	end,
 })
 
 local cmp = require("cmp")
 local lspkind = require("lspkind")
 cmp.setup({
-	completion = {
-		autocomplete = false,
-	},
 	enabled = function()
 		-- Disable when in comments
 		local context = require("cmp.config.context")

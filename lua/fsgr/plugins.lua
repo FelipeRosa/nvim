@@ -22,6 +22,7 @@ local plugins = {
 	},
 	{ "nvim-treesitter/nvim-treesitter" },
 	{ "nvim-treesitter/nvim-treesitter-context" },
+	{ "vrischmann/tree-sitter-templ" },
 	-- LSP
 	{ "williamboman/mason.nvim" },
 	{ "williamboman/mason-lspconfig.nvim" },
@@ -48,6 +49,7 @@ local plugins = {
 	-- Git
 	{ "lewis6991/gitsigns.nvim" },
 	{ "sindrets/diffview.nvim" },
+	{ "tpope/vim-fugitive" },
 	-- Python
 	{
 		"linux-cultist/venv-selector.nvim",
