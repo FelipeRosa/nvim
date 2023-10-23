@@ -156,6 +156,9 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 local cmp = require("cmp")
 local lspkind = require("lspkind")
 cmp.setup({
+	completion = {
+		autocomplete = false,
+	},
 	enabled = function()
 		-- Disable when in comments
 		local context = require("cmp.config.context")
@@ -211,7 +214,7 @@ cmp.setup({
 		["<C-e>"] = cmp.mapping({
 			i = function(fallback)
 				if cmp.visible() then
-					cmp.mapping.abort()
+					cmp.abort()
 				else
 					fallback()
 				end
