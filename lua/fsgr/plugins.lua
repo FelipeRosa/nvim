@@ -60,6 +60,17 @@ local plugins = {
 	{ "nvim-tree/nvim-web-devicons" },
 	-- UI
 	{ "stevearc/dressing.nvim" },
+	-- Markdown
+	{
+		"iamcco/markdown-preview.nvim",
+		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+		ft = { "markdown" },
+		build = function()
+			vim.fn["mkdp#util#install"]()
+		end,
+	},
+	-- Earthly
+	{ "earthly/earthly.vim", branch = "main" },
 }
 
 return plugins

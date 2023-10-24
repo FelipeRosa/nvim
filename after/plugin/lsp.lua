@@ -101,6 +101,9 @@ local formatters_by_ft = {
 	rust = {
 		require("formatter.filetypes.rust").rustfmt,
 	},
+	markdown = {
+		require("formatter.filetypes.markdown").prettier,
+	},
 	["*"] = {
 		require("formatter.filetypes.any").remove_trailing_whitespace,
 	},
