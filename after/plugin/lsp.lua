@@ -116,16 +116,21 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 	pattern = "*",
 	group = vim.api.nvim_create_augroup("FormatOnSave", { clear = true }),
 	callback = function(opts)
+		local filetype = vim.bo[opts.buf].filetype
+
 		local lsp_format = true
 		for ft, _ in pairs(formatters_by_ft) do
-			if vim.bo[opts.buf].filetype == ft then
+			if filetype == ft then
 				lsp_format = false
 				break
 			end
 		end
 
 		if lsp_format then
-			vim.lsp.buf.format()
+			-- Check if we have any LSPs attached to the buffer
+			if #vim.lsp.get_active_clients() > 0 then
+				vim.lsp.buf.format()
+			end
 		else
 			vim.cmd(":FormatWrite")
 		end

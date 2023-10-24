@@ -17,6 +17,7 @@ require("nvim-treesitter.configs").setup({
 		"gomod",
 		"html",
 		"lua",
+		"markdown",
 		"vim",
 		"vimdoc",
 		"python",
