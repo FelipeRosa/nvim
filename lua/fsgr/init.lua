@@ -1,4 +1,4 @@
-require("fsgr.vim")
+require("fsgr.opts")
 require("fsgr.mappings")
 require("fsgr.netrw")
 
