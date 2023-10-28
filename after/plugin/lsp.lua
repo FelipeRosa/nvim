@@ -38,60 +38,60 @@ vim.api.nvim_create_autocmd("LspAttach", {
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
--- Python LS
-lspconfig.pyright.setup({
-	capabilities = capabilities,
-})
-lspconfig.ruff_lsp.setup({
-	capabilities = capabilities,
-})
-
--- Go LS
-lspconfig.gopls.setup({
-	capabilities = capabilities,
-	settings = {
-		gopls = {
-			gofumpt = true,
+local lsp_configs = {
+	pyright = {
+		capabilities = capabilities,
+	},
+	ruff_lsp = {
+		capabilities = capabilities,
+	},
+	gopls = {
+		capabilities = capabilities,
+		settings = {
+			gopls = {
+				gofumpt = true,
+			},
 		},
 	},
-})
+	templ = {
+		capabilities = capabilities,
+	},
+	rust_analyzer = {
+		on_attach = function(_, bufnr)
+			local bufopts = { noremap = true, buffer = bufnr }
 
-lspconfig.templ.setup({
-	capabilities = capabilities,
-})
-
--- Rust LS
-lspconfig.rust_analyzer.setup({
-	on_attach = function(_, bufnr)
-		local bufopts = { noremap = true, buffer = bufnr }
-
-		local rust = require("fsgr.rust")
-		vim.keymap.set("n", "<leader>rc", rust.open_cargo_toml, bufopts)
-		vim.keymap.set("n", "<leader>rr", rust.reload_workspace, bufopts)
-	end,
-	capabilities = capabilities,
-	settings = {
-		["rust-analyzer"] = {
-			imports = {
-				granularity = {
-					group = "module",
+			local rust = require("fsgr.rust")
+			vim.keymap.set("n", "<leader>rc", rust.open_cargo_toml, bufopts)
+			vim.keymap.set("n", "<leader>rr", rust.reload_workspace, bufopts)
+		end,
+		capabilities = capabilities,
+		settings = {
+			["rust-analyzer"] = {
+				imports = {
+					granularity = {
+						group = "module",
+					},
+					prefix = "self",
 				},
-				prefix = "self",
-			},
-			check = {
-				command = "clippy",
-			},
-			cargo = {
-				buildScripts = {
+				checkOnSave = {
+					command = "clippy",
+				},
+				cargo = {
+					buildScripts = {
+						enable = true,
+					},
+				},
+				procMacro = {
 					enable = true,
 				},
 			},
-			procMacro = {
-				enable = true,
-			},
 		},
 	},
-})
+}
+
+for lspname, opts in pairs(lsp_configs) do
+	lspconfig[lspname].setup(opts)
+end
 
 local formatters_by_ft = {
 	lua = require("formatter.filetypes.lua").stylua,
@@ -131,7 +131,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 
 		if lsp_format then
 			-- Check if we have any LSPs attached to the buffer
-			if #vim.lsp.get_active_clients() > 0 then
+			if #vim.lsp.buf_get_clients() > 0 then
 				vim.lsp.buf.format()
 			end
 		else
@@ -184,7 +184,7 @@ cmp.setup({
 				end
 			end,
 		}),
-		["<C-y>"] = cmp.mapping({
+		["<CR>"] = cmp.mapping({
 			i = function(fallback)
 				if cmp.visible() and cmp.get_active_entry() then
 					cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
@@ -211,20 +211,51 @@ cmp.setup({
 		end,
 	},
 	formatting = {
-		format = lspkind.cmp_format({
-			-- show only symbol annotations
-			mode = "symbol",
-			-- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
-			maxwidth = 50,
-			-- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
-			ellipsis_char = "...",
-			-- The function below will be called before any actual modifications from lspkind
-			-- so that you can provide more controls on popup customization.
-			-- See [#30](https://github.com/onsails/lspkind-nvim/pull/30)
-			before = function(_, vim_item)
-				return vim_item
-			end,
-		}),
+		-- Taken from https://github.com/hrsh7th/nvim-cmp/discussions/609
+		format = function(entry, item)
+			-- Define menu shorthand for different completion sources.
+			local menu_icon = {
+				nvim_lsp = "NLSP",
+				nvim_lua = "NLUA",
+				luasnip = "LSNP",
+				buffer = "BUFF",
+				path = "PATH",
+			}
+			-- Set the menu "icon" to the shorthand for each completion source.
+			item.menu = menu_icon[entry.source.name]
+
+			-- Set the fixed width of the completion menu to 60 characters.
+			-- fixed_width = 20
+
+			-- Set 'fixed_width' to false if not provided.
+			fixed_width = fixed_width or false
+
+			-- Get the completion entry text shown in the completion window.
+			local content = item.abbr
+
+			-- Set the fixed completion window width.
+			if fixed_width then
+				vim.o.pumwidth = fixed_width
+			end
+
+			-- Get the width of the current window.
+			local win_width = vim.api.nvim_win_get_width(0)
+
+			-- Set the max content width based on either: 'fixed_width'
+			-- or a percentage of the window width, in this case 20%.
+			-- We subtract 10 from 'fixed_width' to leave room for 'kind' fields.
+			local max_content_width = fixed_width and fixed_width - 10 or math.floor(win_width * 0.2)
+
+			-- Truncate the completion entry text if it's longer than the
+			-- max content width. We subtract 3 from the max content width
+			-- to account for the "..." that will be appended to it.
+			if #content > max_content_width then
+				item.abbr = vim.fn.strcharpart(content, 0, max_content_width - 3) .. "..."
+			else
+				item.abbr = content .. (" "):rep(max_content_width - #content)
+			end
+			return item
+		end,
 	},
 	sorting = {
 		comparators = {
