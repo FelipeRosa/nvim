@@ -8,6 +8,8 @@ vim.opt.wrap = false
 vim.opt.signcolumn = "yes"
 vim.opt.number = true
 vim.opt.relativenumber = true
+vim.opt.scrolloff = 8
+vim.opt.colorcolumn = "80"
 
 vim.opt.swapfile = false
 vim.opt.backup = false
