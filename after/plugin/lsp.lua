@@ -6,7 +6,6 @@ require("mason-lspconfig").setup({
 		"gopls",
 		"pyright",
 		"rust_analyzer",
-		"templ",
 	},
 })
 
@@ -52,9 +51,6 @@ local lsp_configs = {
 				gofumpt = true,
 			},
 		},
-	},
-	templ = {
-		capabilities = capabilities,
 	},
 	rust_analyzer = {
 		on_attach = function(_, bufnr)

@@ -22,10 +22,3 @@ vim.opt.termguicolors = true
 vim.opt.updatetime = 50
 
 vim.opt.shell = "/bin/sh"
-
--- File types
-vim.filetype.add({
-	extension = {
-		templ = "templ",
-	},
-})
