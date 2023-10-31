@@ -9,4 +9,9 @@ return {
 	},
 	{ "nvim-tree/nvim-web-devicons" },
 	{ "stevearc/dressing.nvim" },
+	{
+		"j-hui/fidget.nvim",
+		tag = "legacy",
+		event = "LspAttach",
+	},
 }
