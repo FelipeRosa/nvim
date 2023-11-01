@@ -6,6 +6,9 @@ require("mason-lspconfig").setup({
 		"gopls",
 		"pyright",
 		"rust_analyzer",
+		-- Unable to do this because npm is trying ipv6 by default
+		-- and, for some reason, it gets stuck.
+		-- "tsserver",
 	},
 })
 
@@ -83,6 +86,9 @@ local lsp_configs = {
 			},
 		},
 	},
+	tsserver = {
+		capabilities = capabilities,
+	},
 }
 
 for lspname, opts in pairs(lsp_configs) do
@@ -93,9 +99,6 @@ local formatters_by_ft = {
 	lua = require("formatter.filetypes.lua").stylua,
 	python = {
 		require("formatter.filetypes.python").black,
-	},
-	rust = {
-		require("formatter.filetypes.rust").rustfmt,
 	},
 	markdown = {
 		require("formatter.filetypes.markdown").prettier,
