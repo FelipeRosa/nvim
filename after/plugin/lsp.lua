@@ -48,6 +48,15 @@ local lsp_configs = {
 		capabilities = capabilities,
 	},
 	gopls = {
+		on_attach = function(_, bufnr)
+			local bufopts = { noremap = true, buffer = bufnr }
+
+			local lsp_restart = function()
+				vim.cmd("LspRestart")
+			end
+
+			vim.keymap.set("n", "<leader>rr", lsp_restart, bufopts)
+		end,
 		capabilities = capabilities,
 		settings = {
 			gopls = {
@@ -114,7 +123,7 @@ require("formatter").setup({
 	filetype = formatters_by_ft,
 })
 
-vim.api.nvim_create_autocmd("BufWritePost", {
+vim.api.nvim_create_autocmd("BufWritePre", {
 	pattern = "*",
 	group = vim.api.nvim_create_augroup("FormatOnSave", { clear = true }),
 	callback = function(opts)
