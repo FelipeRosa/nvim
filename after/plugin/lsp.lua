@@ -37,9 +37,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
-local lsp_signature = require("lsp_signature")
-lsp_signature.setup({})
-lsp_signature_cfg = { bind = true }
+-- local lsp_signature = require("lsp_signature")
+-- lsp_signature.setup({})
+-- lsp_signature_cfg = { bind = true }
 
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -76,7 +76,7 @@ local lsp_configs = {
 			vim.keymap.set("n", "<leader>rc", rust.open_cargo_toml, bufopts)
 			vim.keymap.set("n", "<leader>rr", rust.reload_workspace, bufopts)
 
-			lsp_signature.on_attach(lsp_signature_cfg, bufnr)
+			-- lsp_signature.on_attach(lsp_signature_cfg, bufnr)
 		end,
 		capabilities = capabilities,
 		settings = {
