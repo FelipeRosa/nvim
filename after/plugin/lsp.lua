@@ -37,6 +37,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
+local lsp_signature = require("lsp_signature")
+lsp_signature.setup({})
+lsp_signature_cfg = { bind = true }
+
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
@@ -71,6 +75,8 @@ local lsp_configs = {
 			local rust = require("fsgr.rust")
 			vim.keymap.set("n", "<leader>rc", rust.open_cargo_toml, bufopts)
 			vim.keymap.set("n", "<leader>rr", rust.reload_workspace, bufopts)
+
+			lsp_signature.on_attach(lsp_signature_cfg, bufnr)
 		end,
 		capabilities = capabilities,
 		settings = {
@@ -137,11 +143,8 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 			end
 		end
 
-		if lsp_format then
-			-- Check if we have any LSPs attached to the buffer
-			if #vim.lsp.buf_get_clients() > 0 then
-				vim.lsp.buf.format()
-			end
+		if lsp_format and #vim.lsp.buf_get_clients() > 0 then
+			vim.lsp.buf.format()
 		else
 			vim.cmd(":FormatWrite")
 		end
