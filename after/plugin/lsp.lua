@@ -146,7 +146,9 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		if lsp_format and #vim.lsp.buf_get_clients() > 0 then
 			vim.lsp.buf.format()
 		else
-			vim.cmd(":FormatWrite")
+			vim.schedule(function()
+				vim.cmd(":FormatWrite")
+			end)
 		end
 	end,
 })
