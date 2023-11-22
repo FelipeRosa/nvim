@@ -129,26 +129,34 @@ require("formatter").setup({
 	filetype = formatters_by_ft,
 })
 
+local should_format_lsp = function(ft)
+	for ft, _ in pairs(formatters_by_ft) do
+		if filetype == ft then
+			return false
+		end
+	end
+
+	return true
+end
+
 vim.api.nvim_create_autocmd("BufWritePre", {
 	pattern = "*",
-	group = vim.api.nvim_create_augroup("FormatOnSave", { clear = true }),
+	group = vim.api.nvim_create_augroup("LspFormatOnSave", { clear = true }),
 	callback = function(opts)
 		local filetype = vim.bo[opts.buf].filetype
-
-		local lsp_format = true
-		for ft, _ in pairs(formatters_by_ft) do
-			if filetype == ft then
-				lsp_format = false
-				break
-			end
-		end
-
-		if lsp_format and #vim.lsp.buf_get_clients() > 0 then
+		if should_format_lsp(filetype) and #vim.lsp.buf_get_clients() > 0 then
 			vim.lsp.buf.format()
-		else
-			vim.schedule(function()
-				vim.cmd(":FormatWrite")
-			end)
+		end
+	end,
+})
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+	pattern = "*",
+	group = vim.api.nvim_create_augroup("FormatterFormatOnSave", { clear = true }),
+	callback = function(opts)
+		local filetype = vim.bo[opts.buf].filetype
+		if not should_format_lsp(filetype) then
+			vim.cmd(":FormatWrite")
 		end
 	end,
 })
