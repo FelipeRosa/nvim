@@ -81,12 +81,6 @@ local lsp_configs = {
 		capabilities = capabilities,
 		settings = {
 			["rust-analyzer"] = {
-				imports = {
-					granularity = {
-						group = "module",
-					},
-					prefix = "self",
-				},
 				checkOnSave = {
 					command = "clippy",
 				},
@@ -94,6 +88,7 @@ local lsp_configs = {
 					buildScripts = {
 						enable = true,
 					},
+					features = "all",
 				},
 				procMacro = {
 					enable = true,
@@ -129,7 +124,7 @@ require("formatter").setup({
 	filetype = formatters_by_ft,
 })
 
-local should_format_lsp = function(ft)
+local should_format_lsp = function(filetype)
 	for ft, _ in pairs(formatters_by_ft) do
 		if filetype == ft then
 			return false
@@ -155,7 +150,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 	group = vim.api.nvim_create_augroup("FormatterFormatOnSave", { clear = true }),
 	callback = function(opts)
 		local filetype = vim.bo[opts.buf].filetype
-		if not should_format_lsp(filetype) then
+		if not should_format_lsp(filetype) and #vim.lsp.buf_get_clients() == 0 then
 			vim.cmd(":FormatWrite")
 		end
 	end,
