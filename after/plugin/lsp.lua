@@ -1,5 +1,6 @@
 require("Comment").setup()
 
+-- Tool management
 require("mason").setup()
 require("mason-lspconfig").setup({
 	ensure_installed = {
@@ -12,6 +13,7 @@ require("mason-lspconfig").setup({
 	},
 })
 
+-- Telescope stuff
 local telescope_builtin = require("telescope.builtin")
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
@@ -37,9 +39,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
--- local lsp_signature = require("lsp_signature")
--- lsp_signature.setup({})
--- lsp_signature_cfg = { bind = true }
+-- LSP configuration
+require("ferris").setup({
+	create_commands = true,
+})
 
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -73,10 +76,9 @@ local lsp_configs = {
 			local bufopts = { noremap = true, buffer = bufnr }
 
 			local rust = require("fsgr.rust")
-			vim.keymap.set("n", "<leader>rc", rust.open_cargo_toml, bufopts)
-			vim.keymap.set("n", "<leader>rr", rust.reload_workspace, bufopts)
-
-			-- lsp_signature.on_attach(lsp_signature_cfg, bufnr)
+			vim.keymap.set("n", "<leader>rc", "<CMD>FerrisOpenCargoToml<CR>", bufopts)
+			vim.keymap.set("n", "<leader>rr", "<CMD>FerrisReloadWorkspace<CR>", bufopts)
+			vim.keymap.set("n", "<leader>rm", "<CMD>FerrisRebuildMacros<CR>", bufopts)
 		end,
 		capabilities = capabilities,
 		settings = {
@@ -101,6 +103,7 @@ local lsp_configs = {
 	},
 }
 
+-- Formatter
 for lspname, opts in pairs(lsp_configs) do
 	lspconfig[lspname].setup(opts)
 end
@@ -156,6 +159,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 	end,
 })
 
+-- Completion
 local cmp = require("cmp")
 local lspkind = require("lspkind")
 cmp.setup({
