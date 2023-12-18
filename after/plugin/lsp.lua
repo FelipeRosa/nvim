@@ -153,7 +153,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 	group = vim.api.nvim_create_augroup("FormatterFormatOnSave", { clear = true }),
 	callback = function(opts)
 		local filetype = vim.bo[opts.buf].filetype
-		if not should_format_lsp(filetype) and #vim.lsp.buf_get_clients() == 0 then
+		if not should_format_lsp(filetype) or #vim.lsp.buf_get_clients() == 0 then
 			vim.cmd(":FormatWrite")
 		end
 	end,
