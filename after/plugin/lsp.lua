@@ -48,10 +48,16 @@ local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 local lsp_configs = {
+	gdscript = {
+		capabilities = capabilities,
+	},
 	pyright = {
 		capabilities = capabilities,
 	},
 	ruff_lsp = {
+		capabilities = capabilities,
+	},
+	zls = {
 		capabilities = capabilities,
 	},
 	gopls = {
@@ -113,9 +119,9 @@ local formatters_by_ft = {
 	python = {
 		require("formatter.filetypes.python").black,
 	},
-	markdown = {
-		require("formatter.filetypes.markdown").prettier,
-	},
+	-- markdown = {
+	-- 	require("formatter.filetypes.markdown").prettier,
+	-- },
 	["*"] = {
 		require("formatter.filetypes.any").remove_trailing_whitespace,
 	},
